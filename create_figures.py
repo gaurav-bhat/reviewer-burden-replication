@@ -44,7 +44,8 @@ WASHOUT         = pd.Timedelta(days=15)
 df = pd.read_csv(DATA_DIR + "mr_metrics.csv", parse_dates=["created_at"])
 df["created_at"] = pd.to_datetime(df["created_at"], utc=True)
 df = df[df["target_branch"].isin(TARGET_BRANCHES)].copy()
-df = df[~df["title"].str.lower().str.startswith(("draft:", "wip:"), na=False)]
+if "title" in df.columns:
+    df = df[~df["title"].str.lower().str.startswith(("draft:", "wip:"), na=False)]
 df = df[~df["created_at"].between(ADOPTION_DATE - WASHOUT, ADOPTION_DATE + WASHOUT)]
 df["period"] = np.where(df["created_at"] < ADOPTION_DATE, "pre", "post")
 
@@ -109,7 +110,7 @@ ax.text(0.98, 0.97,
 
 ax.set_xlabel("Date")
 ax.set_ylabel("MR count (weekly)")
-ax.set_title("Interrupted Time Series: Pull Request Volume (H1)")
+ax.set_title("Interrupted Time Series: Merge Request Volume (H1)")
 ax.legend(loc="upper left", framealpha=0.9)
 ax.grid(axis="y", alpha=0.3)
 
